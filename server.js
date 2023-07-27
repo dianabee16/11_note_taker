@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const {v4: uuidv4} = require("uuid")
 const PORT = process.env.PORT || 3001
-const app =  express()
+const app = express()
 app.use(express.json())
 app.use(express.urlencoded({
     extended: true
@@ -35,6 +35,18 @@ app.post("/api/notes", (req, res) => {
     dbData.push(freshNote)
     fs.writeFileSync("./db/db.json", JSON.stringify(dbData))
     res.json(dbData)
+})
+
+app.delete("/api/notes/:id", (req, res) => {
+    let data = JSON.parse(fs.readFileSync("./db/db.json", "utf-8"))
+    const filterNotes = data.filter((note) => {
+        return note.id !== req.params.id
+
+    })
+
+    fs.writeFileSync("./db/db.json", JSON.stringify(filterNotes))
+    res.json("noteDeleted")
+    
 })
 
 app.listen(PORT, () => {
